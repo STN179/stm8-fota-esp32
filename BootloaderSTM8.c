@@ -1,22 +1,6 @@
 /*
  * STM8L152C6T6 - FOTA Bootloader FINAL
- * Dia chi register kiem tra tu datasheet STM8L151XX Doc ID 15962
- *
- * CLK_ICKR    = 0x50C2  (khong phai 0x50C0!)
- * CLK_PCKENR1 = 0x50C3  (khong phai 0x50C7!)
- * CLK_CKDIVR  = 0x50C0  (day moi la DIVR)
- * SYSCFG_RMPCR1 = 0x509E
- * USART1_BRR1 = 0x5232, BRR2 = 0x5233
- * USART1_CR2  = 0x5235
- *
- * LED: LD3=PE7 (xanh la), LD4=PC7 (xanh duong)
- * UART: USART1 remap PA2(TX)/PA3(RX) @ 9600 baud 16MHz
- *
- * Build:
- *   sdcc -mstm8 --out-fmt-ihx --code-loc 0x8000 --code-size 0x400
- *        --iram-size 2048 --stack-loc 0x07FF
- *        --nogcse --noinvariant --noinduction
- *        stm8l_bootloader.c -o stm8l_bootloader.ihx
+
  */
 
 typedef unsigned char  u8;

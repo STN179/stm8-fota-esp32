@@ -2,63 +2,41 @@
 
 Hệ thống **cập nhật firmware từ xa qua WiFi (FOTA – Firmware Over-The-Air)** cho vi điều khiển **STM8L152C6T6**, dùng **ESP32 làm cổng trung gian (gateway)** kèm **giao diện web kéo-thả** để nạp firmware — **không cần mạch nạp ST-Link hay tháo thiết bị**.
 
-![Platform](https://img.shields.io/badge/MCU-STM8L152C6T6-blue)
-![Gateway](https://img.shields.io/badge/Gateway-ESP32-informational)
-![Language](https://img.shields.io/badge/Code-C%20%2F%20C%2B%2B-orange)
-![License](https://img.shields.io/badge/License-MIT-green)
 
-> 🎓 Đề tài nghiên cứu khoa học · Nhóm 3 người · **Vai trò của tôi: lập trình bootloader trên STM8 (bare-metal).**
+##  Tính năng chính
 
----
-
-## 📸 Demo
-
-> _Thêm ảnh/GIF của bạn vào đây để repo ấn tượng hơn (rất khuyến khích với dự án phần cứng):_
-> - Ảnh giao diện web nạp firmware
-> - GIF/video quá trình nạp thành công (LED STM8 nháy theo firmware mới)
-> - Ảnh đấu nối thực tế ESP32 ↔ STM8-DISCOVERY
-
-```
-![Web UI](docs/web_ui.png)
-![Demo](docs/demo.gif)
-```
+-  **Web IDE** cho phép viết và chỉnh sửa mã nguồn C trực tiếp trên trình duyệt.
+-  **Nạp firmware cho STM8 qua Wi-Fi** thông qua ESP32 Gateway, không cần kết nối trực tiếp với ST-Link trong quá trình cập nhật.
+-  Giao diện web hiển thị **trạng thái biên dịch**, **tiến trình nạp firmware** và **log thời gian thực**.
+-  ESP32 đóng vai trò **Gateway**, nhận firmware từ Web IDE và truyền đến STM8 thông qua giao tiếp UART.
+-  Bootloader STM8 được xây dựng theo hướng **bare-metal**, hỗ trợ nhận firmware, kiểm tra CRC và ghi vào Flash.
+-  Dữ liệu được truyền theo **giao thức tùy chỉnh có CRC16**, kết hợp cơ chế **ACK/NACK, timeout và retransmission** nhằm tăng độ tin cậy trong quá trình cập nhật firmware.
 
 ---
 
-## ✨ Tính năng chính
-
-- 📡 Nạp firmware cho STM8 **qua WiFi**, không cần ST-Link.
-- 🖥️ **Giao diện web** kéo-thả file `.bin`, hiển thị **tiến trình** và **log realtime** (Server-Sent Events).
-- ⚙️ **Bootloader tự viết** cho STM8 theo kiểu **bare-metal** (thao tác trực tiếp thanh ghi, không HAL, không OS).
-- 🛡️ Truyền dữ liệu theo **khung có kiểm tra CRC16-CCITT**, kèm **retry** và **timeout** đảm bảo toàn vẹn.
-- 🔒 Ghi Flash bằng **IAP có kiểm tra vùng địa chỉ hợp lệ**; có **watchdog** và cơ chế **tự chạy lại ứng dụng** khi lỗi/hết thời gian chờ.
-
----
-
-## 🧩 Kiến trúc hệ thống
+##  Kiến trúc hệ thống
 
 ```
 ┌───────────────┐   WiFi / HTTP    ┌───────────────────┐   UART + CRC16    ┌────────────────────┐
 │  Trình duyệt  │ ───────────────▶ │   ESP32 Gateway   │ ────────────────▶ │  STM8 Bootloader   │
-│   (Web UI)    │   kéo-thả .bin   │  AP: 192.168.4.1  │   khung + ACK     │      @ 0x8000      │
+│   (Web UI)    │  Build → .bin    │                    │   khung + ACK     │      @ 0x8000      │
 └───────────────┘ ◀─────────────── └───────────────────┘ ◀──────────────── └────────────────────┘
-                    log realtime                            ACK / NACK               │
-                    (SSE)                                                             ▼
-                                                                        Ghi Flash Application @ 0x8400
+                                                            ACK / NACK               │
+                                                                                     ▼
+                                                                        Ghi Flash Application tại địa chỉ 0x8400
 ```
 
-**Luồng hoạt động:** người dùng mở web trên ESP32 → chọn file `.bin` → ESP32 reset STM8, bắt tay (handshake) → truyền firmware theo từng khung có CRC16 → bootloader STM8 ghi vào Flash → nạp xong thì nhảy sang chạy ứng dụng mới tại `0x8400`.
+**Luồng hoạt động:** Người dùng truy cập giao diện Web IDE, viết hoặc chỉnh sửa mã nguồn C trực tiếp trên trình duyệt -> gửi yêu cầu biên dịch (Build) -> backend sử dụng trình biên dịch SDCC để tạo firmware `.bin` -> firmware được gửi đến ESP32 Gateway -> ESP32 reset STM8 và thực hiện bắt tay (handshake) với bootloader -> firmware được truyền theo từng khung dữ liệu có kiểm tra CRC16 -> bootloader STM8 ghi dữ liệu vào Flash -> sau khi nạp hoàn tất, bootloader thực thi sang chương trình  tại địa chỉ `0x8400`.
 
 ---
 
-## 📁 Cấu trúc thư mục
+##  Cấu trúc thư mục
 
 ```
 .
 ├── FOTA_Gateway/
 │   └── src/
 │       ├── main.cpp        # Firmware ESP32 Gateway (WiFi AP + web server + nạp UART)
-│       ├── bootloader.c    # Bootloader STM8 (bản đi kèm gateway)
 │       ├── index.html      # Giao diện web
 │       ├── style.css       # CSS giao diện
 │       └── script.js       # JS giao diện (upload .bin, thanh tiến trình, log)
@@ -70,7 +48,7 @@ Hệ thống **cập nhật firmware từ xa qua WiFi (FOTA – Firmware Over-Th
 
 ---
 
-## 🔧 Phần cứng & đấu nối
+##  Phần cứng & đấu nối
 
 - **MCU:** STM8L152C6T6 (board **STM8L-DISCOVERY**)
 - **Gateway:** ESP32 DevKit
@@ -82,11 +60,11 @@ Hệ thống **cập nhật firmware từ xa qua WiFi (FOTA – Firmware Over-Th
 | GPIO4           | PA1 / RST (P1-4)       | ESP32 điều khiển reset    |
 | GND             | GND (P1-3)             | Nối chung mass            |
 
-> ⚠️ Trên STM8L-DISCOVERY nhớ **tháo jumper JP1** để tránh xung đột nguồn/tín hiệu.
+>  Trên STM8L-DISCOVERY nhớ háo jumper JP1 để tránh xung đột nguồn/tín hiệu.
 
 ---
 
-## 📦 Giao thức nạp firmware
+## Giao thức nạp firmware
 
 **Các byte điều khiển:**
 
@@ -115,50 +93,27 @@ Hệ thống **cập nhật firmware từ xa qua WiFi (FOTA – Firmware Over-Th
 
 ---
 
-## 🛠️ Hướng dẫn Build & Nạp
+## Trình tự thực hiện
 
 ### 1) Build bootloader STM8 (SDCC)
 
-```bash
-sdcc -mstm8 --out-fmt-ihx --code-loc 0x8000 --code-size 0x400 \
-     --iram-size 2048 --stack-loc 0x07FF \
-     --nogcse --noinvariant --noinduction \
-     BootloaderSTM8.c -o bootloader.ihx
-```
-
-Nạp bootloader **một lần duy nhất** vào STM8 bằng ST-Link (ví dụ dùng `stm8flash`). Sau bước này, mọi lần cập nhật ứng dụng về sau đều làm **qua WiFi**, không cần ST-Link nữa.
+Nạp bootloader **một lần duy nhất** vào STM8 bằng ST-Link ). Sau bước này, mọi lần cập nhật ứng dụng về sau đều làm **qua WiFi**, không cần ST-Link nữa.
 
 ### 2) Nạp firmware ESP32 Gateway
 
 - Mở `FOTA_Gateway/src/main.cpp` bằng **Arduino IDE** hoặc **PlatformIO** (board: ESP32 Dev Module).
 - Thư viện cần: `ESPAsyncWebServer`, `AsyncTCP`.
-- Nếu giao diện web được phục vụ từ **LittleFS**: đặt `index.html`, `style.css`, `script.js` vào thư mục `data/` rồi nạp bằng công cụ *ESP32 Sketch Data Upload* / *arduino-littlefs-upload*.
 - Nạp sketch lên ESP32.
 
 ### 3) Sử dụng
 
-1. Kết nối WiFi **`FOTA-Gateway`** (mật khẩu mặc định `12345678`).
-2. Mở trình duyệt tới **`http://192.168.4.1`**.
-3. Kéo-thả file firmware `.bin` (≤ 28 KB) → bấm **Nạp**.
-4. Theo dõi tiến trình & log; nạp xong STM8 tự chạy firmware mới.
+1. Kết nối WiFi **`FOTA-Gateway`** (mật khẩu mặc định `[ ]`).
+2. Mở trình duyệt tại **`http://192.168.4.1`**.
+3. Viết hoặc chỉnh sửa mã nguồn C trên **Web IDE**, sau đó nhấn **Build** để biên dịch thành firmware `.bin`.
+4. Sau khi biên dịch thành công, nhấn **Flash** để gửi firmware đến ESP32 và nạp xuống STM8.
+5. Theo dõi tiến trình và log trên giao diện; sau khi hoàn tất, bootloader sẽ chuyển sang thực thi chương trình mới trên STM8.
 
 ---
 
-## 🧪 Công nghệ sử dụng
 
-- **STM8:** C bare-metal, SDCC, UART/USART1, Flash IAP, IWDG (watchdog), CRC16-CCITT.
-- **ESP32:** C/C++ (Arduino), WiFi SoftAP, ESPAsyncWebServer, Server-Sent Events, FreeRTOS task.
-- **Web:** HTML/CSS/JavaScript (kéo-thả file, progress bar, log realtime).
 
----
-
-## 👤 Tác giả & Đóng góp
-
-- **Nguyễn Thúy Hiền** — phụ trách **bootloader STM8** (bare-metal, giao thức UART + CRC16, ghi Flash IAP, watchdog).
-- Đề tài thực hiện theo nhóm (3 thành viên); phần cổng ESP32 và giao diện web là công sức chung của nhóm.
-
----
-
-## 📄 License
-
-Dự án phát hành theo giấy phép **MIT** — xem file [LICENSE](LICENSE).

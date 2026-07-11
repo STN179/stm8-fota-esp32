@@ -1,6 +1,6 @@
 #  FOTA System for STM8 - Cập nhật firmware qua WiFi cho STM8
 
-Hệ thống cập nhật firmware từ xa qua WiFi (FOTA – Firmware Over-The-Air)** cho vi điều khiển STM8L152C6T6, kèm giao diện Web IDE để viết, biên dịch và nạp firmware cho STM8 qua Wi-Fi 
+Hệ thống cập nhật firmware từ xa qua WiFi (FOTA – Firmware Over-The-Air) cho vi điều khiển STM8L152C6T6, kèm giao diện Web IDE để viết, biên dịch và nạp firmware cho STM8 qua Wi-Fi 
 
 
 ##  Tính năng chính

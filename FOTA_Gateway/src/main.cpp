@@ -9,11 +9,11 @@
 //  CẤU HÌNH
 // ============================================================
 #define WIFI_SSID        "FOTA-Gateway"
-#define WIFI_PASSWORD    "12345678"   // TODO: đổi mật khẩu trước khi public repo
+#define WIFI_PASSWORD    "[]"   
 
 #define STM8_RESET_PIN   4
-#define STM8_TX_PIN      17   // GPIO17 → PA3 STM8 RX
-#define STM8_RX_PIN      16   // GPIO16 ← PA2 STM8 TX
+#define STM8_TX_PIN      17   
+#define STM8_RX_PIN      16   
 #define STM8_BAUDRATE    4800  // Khớp với bit-bang 2MHz
 
 #define FRAME_DATA_SIZE  16
@@ -102,7 +102,7 @@ bool do_handshake() {
 
   if (SIM_MODE) {
     delay(300);
-    send_log("ok", "✅ [SIM] Handshake OK");
+    send_log("ok", " [SIM] Handshake OK");
     return true;
   }
 
@@ -115,10 +115,10 @@ bool do_handshake() {
   digitalWrite(STM8_RESET_PIN, HIGH);
   Serial.println("[RESET] Da kich hoat reset STM8");
 
-  send_log("info", "⏳ Cho Bootloader khoi dong (2 giay)...");
+  send_log("info", " Cho Bootloader khoi dong (2 giay)...");
   delay(2000);
 
-  send_log("info", "🤝 Bat dau goi tin hieu Handshake (0x7F)...");
+  send_log("info", " Bat dau goi tin hieu Handshake (0x7F)...");
 
   for (int i = 0; i < 15; i++) {
     while (Serial2.available()) Serial2.read();
@@ -135,7 +135,7 @@ bool do_handshake() {
         if (is_ack(b)) {
           char hex_buf[16];
           snprintf(hex_buf, sizeof(hex_buf), "0x%02X", b);
-          send_log("ok", String("✅ Handshake thanh cong! STM8 phan hoi: ") + hex_buf);
+          send_log("ok", String(" Handshake thanh cong! STM8 phan hoi: ") + hex_buf);
           return true;
         }
       }
@@ -144,7 +144,7 @@ bool do_handshake() {
     delay(50);
   }
 
-  send_log("err", "❌ Handshake that bai sau 15 lan thu!");
+  send_log("err", " Handshake that bai sau 15 lan thu!");
   return false;
 }
 
@@ -180,16 +180,16 @@ bool send_frame(uint32_t addr, const uint8_t* data, uint8_t len) {
 void flash_task(void* param) {
   char buf[100];
 
-  send_log("info", "🔍 Kiem tra tinh toan ven CRC cua File...", 5, "CRC");
+  send_log("info", " Kiem tra tinh toan ven CRC cua File...", 5, "CRC");
   delay(200);
   uint16_t fw_crc = crc16_ccitt(firmware_buf, firmware_size);
-  snprintf(buf, sizeof(buf), "📊 CRC16 File: 0x%04X — Hop le (%u bytes)", fw_crc, firmware_size);
+  snprintf(buf, sizeof(buf), "CRC16 File: 0x%04X — Hop le (%u bytes)", fw_crc, firmware_size);
   send_log("ok", buf, 10, "CRC OK");
   delay(200);
 
   send_log("info", "🔌 Thuc hien dong bo voi STM8...", 12, "Handshake");
   if (!do_handshake()) {
-    send_log("err", "❌ Khong the ket noi Bootloader STM8!", -1, "", true, false);
+    send_log("err", " Khong the ket noi Bootloader STM8!", -1, "", true, false);
     goto done;
   }
   delay(200);
@@ -228,7 +228,7 @@ void flash_task(void* param) {
     }
   }
 
-  send_log("info", "🏁 Hoan tat truyen file, gui byte ket thuc...", 92, "Hoàn thiện");
+  send_log("info", " Hoan tat truyen file, gui byte ket thuc...", 92, "Hoàn thiện");
   delay(200);
 
   {

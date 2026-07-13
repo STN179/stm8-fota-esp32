@@ -1,18 +1,10 @@
-#!/usr/bin/env python3
+
 """
-================================================================================
- compile_server.py   Local compile & flash gateway for STM8L FOTA project
-================================================================================
- Runs on YOUR PC.  Duties:
-   1) Serves the web UI (index.html / style.css / script.js) on localhost:8080.
-   2) POST /compile        full pipeline: C source → SDCC → .bin → ESP32
-   3) POST /compile-only   sync compile, returns .bin bytes (used by ESP32 page)
-   4) GET  /events         Server-Sent Events stream (progress messages)
 
  Requires:
    * Python 3.8+
    * `sdcc`  on PATH  (comes with the SDCC installer)
-   * PC's WiFi is connected to FOTA-Gateway so we can reach 192.168.4.1
+   * PC's WiFi is connected to FOTA-Gateway 
 ================================================================================
 """
 

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FOTA STM8L</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <h1>FOTA STM8L</h1>
+    <div class="status" id="status">
+      <span class="dot" id="dot"></span>
+      <span id="status-text">Đang kiểm tra...</span>
+    </div>
+  </header>
+
+  <main>
+
+    <section class="pane pane-editor">
+      <div class="pane-head">
+        <h2>1. Viết / dán code C</h2>
+        <div class="tools">
+          <label class="tpl">
+            Mẫu:
+            <select id="tpl">
+              <option value="">— chọn —</option>
+              <optgroup label="LED">
+                <option value="blink">Blink 2 LED (ổn định)</option>
+                <option value="blink_fast">Blink LD3 nhanh</option>
+                <option value="button_toggle">Toggle LED bằng nút B2</option>
+              </optgroup>
+              <optgroup label="UART">
+                <option value="uart_echo">UART echo (PA2/PA3)</option>
+              </optgroup>
+              <optgroup label="LCD (6 số/chữ)">
+                <option value="lcd_hello">Hiển thị HELLO</option>
+                <option value="lcd_counter">Đếm số 0 → 999</option>
+                <option value="lcd_scroll">Chạy chữ ngang</option>
+                <option value="lcd_diag">Bật toàn bộ segment (diagnostic)</option>
+              </optgroup>
+            </select>
+          </label>
+          <label class="upload">
+            Tải file .c:
+            <input type="file" id="file" accept=".c,.txt">
+          </label>
+        </div>
+      </div>
+      <textarea id="src" spellcheck="false" wrap="off"></textarea>
+      <div class="editor-foot">
+        <span id="src-info">0 dòng · 0 ký tự</span>
+        <button id="btn-clear" class="btn ghost">Xoá</button>
+      </div>
+    </section>
+
+    <section class="pane pane-actions">
+      <button id="btn-flash" class="btn primary">
+        Biên dịch &amp; Nạp xuống STM8
+      </button>
+
+      <div class="team">
+        <div class="team-title">NHÓM THỰC HIỆN</div>
+        <ul class="team-list">
+          <li>
+            <span class="tm-name">Nguyễn Thúy Hiền</span>
+            <span class="tm-id">22129014</span>
+          </li>
+          <li>
+            <span class="tm-name">Phạm Quốc Thắng</span>
+            <span class="tm-id">23161193</span>
+          </li>
+          <li>
+            <span class="tm-name">Đặng Thành Dương</span>
+            <span class="tm-id">23161117</span>
+          </li>
+        </ul>
+        <div class="team-sup">
+          <span class="tm-role">GVHD</span>
+          <span class="tm-name">ThS. Lê Minh Thành</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="pane pane-log">
+      <div class="pane-head">
+        <h2>2. Nhật ký</h2>
+        <div class="progress">
+          <div class="pbar"><div id="pfill"></div></div>
+          <span id="ppct">0%</span>
+        </div>
+      </div>
+      <div id="log" class="log"></div>
+      <div id="result" class="result"></div>
+    </section>
+
+  </main>
+
+  <footer>
+    <span>STM8L Discovery · USART1 PA2/PA3 · 9600 8N1</span>
+    <span id="last-status"></span>
+  </footer>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

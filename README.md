@@ -31,23 +31,6 @@ Hệ thống cập nhật firmware từ xa qua WiFi (FOTA – Firmware Over-The-
 
 ---
 
-##  Cấu trúc thư mục
-
-```
-.
-├── FOTA_Gateway/
-│   └── src/
-│       ├── main.cpp        # Firmware ESP32 Gateway (WiFi AP + web server + nạp UART)
-│       ├── index.html      # Giao diện web
-│       ├── style.css       # CSS giao diện
-│       └── script.js       # JS giao diện (upload .bin, thanh tiến trình, log)
-├── BootloaderSTM8.c        # Bootloader STM8 (bare-metal, bản chính)
-├── .gitignore
-├── LICENSE                 # MIT
-└── README.md
-```
-
----
 
 ##  Phần cứng & đấu nối
 
